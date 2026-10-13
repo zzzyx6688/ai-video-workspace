@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>10 大爆火视频 Skills — GitHub Stars 榜单动效</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #070b16;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        color: #f4f6fb;
+      }
+      /* 中文字体：本机 Noto Sans CJK SC（Regular + Bold 均已安装） */
+      @font-face {
+        font-family: "Noto Sans CJK SC";
+        src: local("Noto Sans CJK SC");
+        font-weight: 400 900;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      /* ---------- 背景层（全片 0-15s） ---------- */
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      #bg-gradient {
+        background:
+          radial-gradient(1100px 620px at 82% -10%, rgba(99, 102, 241, 0.32), transparent 62%),
+          radial-gradient(900px 540px at -8% 108%, rgba(34, 211, 238, 0.14), transparent 60%),
+          linear-gradient(160deg, #0a1020 0%, #070b16 55%, #05070f 100%);
+      }
+      #bg-grid {
+        background-image:
+          linear-gradient(rgba(148, 163, 184, 0.055) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.055) 1px, transparent 1px);
+        background-size: 64px 64px;
+      }
+      #bg-vignette {
+        background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(3, 5, 12, 0.72) 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="15"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- 背景 -->
+      <div id="bg-gradient" class="clip" data-start="0" data-duration="15" data-track-index="0"></div>
+      <div id="bg-grid" class="clip" data-start="0" data-duration="15" data-track-index="1"></div>
+      <div id="bg-vignette" class="clip" data-start="0" data-duration="15" data-track-index="2"></div>
+
+      <!-- 场景 1：标题卡 0 - 3.2 -->
+      <div
+        id="scene-title"
+        data-composition-id="scene-title"
+        data-composition-src="compositions/scene-title.html"
+        data-start="0"
+        data-duration="3.2"
+        data-track-index="3"
+      ></div>
+
+      <!-- 场景 2：TOP5 榜单 3.2 - 11.4 -->
+      <div
+        id="scene-board"
+        data-composition-id="scene-board"
+        data-composition-src="compositions/scene-board.html"
+        data-start="3.2"
+        data-duration="8.2"
+        data-track-index="4"
+      ></div>
+
+      <!-- 场景 3：结语 11.4 - 15 -->
+      <div
+        id="scene-outro"
+        data-composition-id="scene-outro"
+        data-composition-src="compositions/scene-outro.html"
+        data-start="11.4"
+        data-duration="3.6"
+        data-track-index="5"
+      ></div>
+    </div>
+
+    <script>
+      // 根 composition：仅承载背景与三个子 composition，无自身动画
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
