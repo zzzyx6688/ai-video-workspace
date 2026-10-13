@@ -1,0 +1,77 @@
+<template>
+  <style>
+    /* 本场景内 .clip 为流式定位；.outro-line 用绝对坐标固定三行位置 */
+    .clip {
+      position: relative;
+      inset: auto;
+    }
+    /* 中文字体：本机 Noto Sans CJK SC（Regular + Bold 均已安装） */
+    @font-face {
+      font-family: "Noto Sans CJK SC";
+      src: local("Noto Sans CJK SC");
+      font-weight: 400 900;
+    }
+    #scene-outro .outro-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+    }
+    #scene-outro #outro-line1 {
+      top: 372px;
+      font-size: 100px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+      background: linear-gradient(96deg, #eef2ff, #a5b4fc 45%, #67e8f9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    #scene-outro #outro-line2 {
+      top: 566px;
+      font-size: 36px;
+      color: #9fb0d6;
+      letter-spacing: 0.1em;
+      line-height: 1.4;
+    }
+    #scene-outro #outro-tag {
+      top: 664px;
+      font-size: 26px;
+      color: #6f7ea3;
+      letter-spacing: 0.24em;
+      line-height: 1.4;
+    }
+  </style>
+
+  <div
+    id="scene-outro"
+    data-composition-id="scene-outro"
+    data-start="0"
+    data-duration="3.6"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div id="outro-line1" class="clip outro-line" data-start="0" data-duration="3.6" data-track-index="0">Write HTML. Render Video.</div>
+    <div id="outro-line2" class="clip outro-line" data-start="0" data-duration="3.6" data-track-index="1">本片由 HyperFrames 渲染 · 画面 100% 由代码绘制</div>
+    <div id="outro-tag" class="clip outro-line" data-start="0" data-duration="3.6" data-track-index="2">STARRED BY 1.3M+ DEVELOPERS</div>
+  </div>
+
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(
+        "#outro-line1",
+        { opacity: 0, y: 52, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power4.out" },
+        0.2
+      );
+      tl.fromTo("#outro-line2", { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.75);
+      tl.fromTo("#outro-tag", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 1.1);
+
+      window.__timelines["scene-outro"] = tl;
+      tl.seek(0);
+    })();
+  </script>
+</template>
