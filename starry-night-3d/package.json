@@ -1,0 +1,20 @@
+{
+  "name": "starry-night-3d",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Van Gogh's Starry Night as a colossal, flyable 3D cosmos. TypeScript + Three.js.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  }
+}
