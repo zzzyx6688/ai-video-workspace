@@ -1,0 +1,13 @@
+{
+  "name": "remotion-demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "render": "remotion render src/index.ts Demo out.mp4",
+    "studio": "remotion studio src/index.ts"
+  },
+  "dependencies": {
+    "remotion": "4.0.535",
+    "@remotion/cli": "4.0.535"
+  }
+}
