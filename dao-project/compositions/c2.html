@@ -1,0 +1,61 @@
+<template>
+  <style>
+    .clip { position: relative; inset: auto; }
+    @font-face { font-family: "Noto Sans CJK SC"; src: local("Noto Sans CJK SC"); font-weight: 400 900; }
+    #c2 { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      font-family: "Noto Sans CJK SC", system-ui, sans-serif; color: #e8eef0; background: #10191d; }
+    #bamboo { position: absolute; inset: 0;
+      background: repeating-linear-gradient(90deg, rgba(120,98,66,0.16) 0 40px, rgba(40,32,20,0.10) 40px 46px);
+      opacity: 0.7; }
+    #bamboo-glow { position: absolute; top: 0; bottom: 0; width: 340px; left: -340px;
+      background: linear-gradient(90deg, transparent, rgba(220,205,160,0.10), transparent); filter: blur(6px); }
+    #road { position: absolute; left: 0; right: 0; bottom: 0; height: 300px;
+      background: linear-gradient(180deg, rgba(30,42,46,0), rgba(22,32,36,0.9)); }
+    #laozi { position: absolute; bottom: 150px; right: -40px; }
+    #cap2 { position: absolute; left: 0; right: 0; bottom: 120px; text-align: center; padding: 0 240px;
+      font-size: 38px; line-height: 1.7; letter-spacing: 0.03em; color: #eef3f2; opacity: 0;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+    #vs { position: absolute; left: 0; right: 0; top: 150px; text-align: center; opacity: 0; }
+    #vs .big { font-size: 64px; font-weight: 800; letter-spacing: 0.1em;
+      background: linear-gradient(90deg, #e7d9b0, #9fb0ac); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #vs .row { margin-top: 26px; font-size: 40px; color: #cdd8d5; letter-spacing: 0.06em; }
+    #vs .row .k { color: #8fd3c4; }
+    #vs .row .sep { color: #7e908c; margin: 0 18px; }
+  </style>
+  <div id="c2" data-composition-id="c2" data-start="0" data-duration="14" data-width="1920" data-height="1080">
+    <div id="bamboo"></div>
+    <div id="bamboo-glow"></div>
+    <div id="road"></div>
+    <svg id="laozi" width="420" height="300" viewBox="0 0 420 300">
+      <g fill="#0c1518" opacity="0.85">
+        <ellipse cx="200" cy="200" rx="150" ry="62"/>
+        <rect x="70" y="196" width="14" height="92" rx="5"/>
+        <rect x="150" y="200" width="14" height="92" rx="5"/>
+        <rect x="262" y="200" width="14" height="92" rx="5"/>
+        <rect x="330" y="196" width="14" height="92" rx="5"/>
+        <path d="M50,200 q-30,-10 -40,8 q24,6 40,2 Z"/>
+        <ellipse cx="210" cy="120" rx="34" ry="40"/>
+        <rect x="196" y="150" width="30" height="60" rx="12"/>
+        <path d="M210,90 q26,-30 54,-18" stroke="#0c1518" stroke-width="14" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div id="vs">
+      <div class="big">道家 ≠ 道教</div>
+      <div class="row"><span class="k">道家</span><span class="sep">·</span>哲学思想</div>
+      <div class="row"><span class="k">道教</span><span class="sep">·</span>后世形成的宗教</div>
+    </div>
+    <div id="cap2">道家，首先不是宗教，而是一套中国人观察天地、安顿内心的古老思想。<br/>它起源于春秋，由老子奠基，后经庄子发扬光大。</div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#bamboo-glow", { x: 0 }, { x: 2200, duration: 3.2, ease: "power1.inOut" }, 0.4);
+      tl.fromTo("#laozi", { x: 0, scale: 1, opacity: 0 }, { x: -1100, scale: 0.55, opacity: 0.9, duration: 11, ease: "none" }, 0.5);
+      tl.fromTo("#vs", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.0, ease: "power2.out" }, 1.2);
+      tl.to("#vs", { opacity: 0, duration: 0.8 }, 8.5);
+      tl.fromTo("#cap2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 9.2);
+      tl.to("#cap2", { opacity: 0, duration: 0.8 }, 13.2);
+      window.__timelines["c2"] = tl; tl.seek(0);
+    })();
+  </script>
+</template>
