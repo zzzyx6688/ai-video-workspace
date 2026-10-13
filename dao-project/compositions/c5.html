@@ -1,0 +1,60 @@
+<template>
+  <style>
+    .clip { position: relative; inset: auto; }
+    @font-face { font-family: "Noto Sans CJK SC"; src: local("Noto Sans CJK SC"); font-weight: 400 900; }
+    #c5 { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      font-family: "Noto Sans CJK SC", system-ui, sans-serif; color: #e8eef0; }
+    .montage { position: absolute; inset: 0; opacity: 0; }
+    #m1 { background: radial-gradient(700px 400px at 30% 40%, rgba(143,211,196,0.12), transparent 70%), linear-gradient(180deg, #16242a, #0e171b); }
+    #m2 { background: radial-gradient(600px 500px at 70% 50%, rgba(231,217,176,0.10), transparent 70%), linear-gradient(180deg, #1b2d33, #0e171b); }
+    #m3 { background: radial-gradient(700px 420px at 50% 45%, rgba(143,211,196,0.10), transparent 70%), linear-gradient(180deg, #15242a, #0e171b); }
+    #m4 { background: linear-gradient(180deg, #18282c, #0e171b); }
+    .m-title { position: absolute; left: 0; right: 0; top: 200px; text-align: center;
+      font-size: 72px; font-weight: 800; letter-spacing: 0.14em;
+      background: linear-gradient(180deg, #f3efe4, #9fb0ac); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0; }
+    #taiji { position: absolute; left: 50%; top: 50%; margin: -150px 0 0 -150px; opacity: 0; }
+    #cap5 { position: absolute; left: 0; right: 0; bottom: 96px; text-align: center; padding: 0 220px;
+      font-size: 36px; line-height: 1.7; letter-spacing: 0.03em; color: #eef3f2; opacity: 0;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+    #tag5 { position: absolute; left: 0; right: 0; top: 470px; text-align: center; opacity: 0;
+      font-size: 34px; letter-spacing: 0.14em; color: #8fd3c4; }
+  </style>
+  <div id="c5" data-composition-id="c5" data-start="0" data-duration="18" data-width="1920" data-height="1080">
+    <div class="montage" id="m1"><div class="m-title" id="mt1">山水 · 留白</div></div>
+    <div class="montage" id="m2"><div class="m-title" id="mt2">古琴 · 清音</div></div>
+    <div class="montage" id="m3"><div class="m-title" id="mt3">园林 · 借景</div></div>
+    <div class="montage" id="m4">
+      <svg id="taiji" width="300" height="300" viewBox="0 0 300 300">
+        <circle cx="150" cy="150" r="140" fill="none" stroke="rgba(206,214,213,0.5)" stroke-width="3"/>
+        <path d="M150,10 A70,70 0 0 1 150,150 A70,70 0 0 0 150,290 A140,140 0 0 1 150,10 Z" fill="rgba(231,217,176,0.85)"/>
+        <circle cx="150" cy="80" r="22" fill="#0e171b"/>
+        <circle cx="150" cy="220" r="22" fill="rgba(231,217,176,0.85)"/>
+      </svg>
+      <div class="m-title" id="mt4" style="top:560px">太极 · 以柔克刚</div>
+    </div>
+    <div id="tag5">融入中国人的生活与审美</div>
+    <div id="cap5">往后千年，道家思想慢慢融入我们的文化：山水画的留白、园林的借景、<br/>太极拳的以柔克刚、中医讲究的阴阳平衡。<br/>它藏在中国人的审美、养生，甚至处世方式里。</div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#m1", { opacity: 0 }, { opacity: 1, duration: 1.2 }, 0);
+      tl.fromTo("#mt1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 0.4);
+      tl.to("#m1", { opacity: 0, duration: 1.0 }, 3.6);
+      tl.fromTo("#m2", { opacity: 0 }, { opacity: 1, duration: 1.2 }, 3.8);
+      tl.fromTo("#mt2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 4.2);
+      tl.to("#m2", { opacity: 0, duration: 1.0 }, 7.4);
+      tl.fromTo("#m3", { opacity: 0 }, { opacity: 1, duration: 1.2 }, 7.6);
+      tl.fromTo("#mt3", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 8.0);
+      tl.to("#m3", { opacity: 0, duration: 1.0 }, 11.2);
+      tl.fromTo("#m4", { opacity: 0 }, { opacity: 1, duration: 1.2 }, 11.4);
+      tl.fromTo("#taiji", { opacity: 0, rotation: 0 }, { opacity: 1, rotation: 360, duration: 6, ease: "none" }, 11.6);
+      tl.to("#m4", { opacity: 0, duration: 1.0 }, 16.5);
+      tl.fromTo("#tag5", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 1.0 }, 1.0);
+      tl.to("#tag5", { opacity: 0, duration: 0.8 }, 15.5);
+      tl.fromTo("#cap5", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 12.5);
+      tl.to("#cap5", { opacity: 0, duration: 0.8 }, 17.2);
+      window.__timelines["c5"] = tl; tl.seek(0);
+    })();
+  </script>
+</template>
