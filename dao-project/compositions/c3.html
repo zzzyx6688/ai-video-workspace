@@ -1,0 +1,59 @@
+<template>
+  <style>
+    .clip { position: relative; inset: auto; }
+    @font-face { font-family: "Noto Sans CJK SC"; src: local("Noto Sans CJK SC"); font-weight: 400 900; }
+    #c3 { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      font-family: "Noto Sans CJK SC", system-ui, sans-serif; color: #e8eef0; }
+    #butterfly { position: absolute; top: 300px; left: 360px; }
+    .bf-wing { transform-origin: center; }
+    #stream { position: absolute; left: 0; bottom: 120px; width: 100%; }
+    .grass { position: absolute; bottom: 90px; transform-origin: bottom center; }
+    #cap3 { position: absolute; left: 0; right: 0; bottom: 96px; text-align: center; padding: 0 230px;
+      font-size: 36px; line-height: 1.7; letter-spacing: 0.03em; color: #eef3f2; opacity: 0;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+    #classic { position: absolute; left: 0; right: 0; top: 168px; text-align: center; opacity: 0; }
+    #classic .t { font-size: 38px; letter-spacing: 0.16em; color: #9fb0ac; }
+    #classic .b { margin-top: 18px; font-size: 58px; font-weight: 800; letter-spacing: 0.1em;
+      background: linear-gradient(90deg, #e7d9b0, #8fd3c4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  </style>
+  <div id="c3" data-composition-id="c3" data-start="0" data-duration="18" data-width="1920" data-height="1080">
+    <svg id="stream" viewBox="0 0 1920 200" preserveAspectRatio="none" style="height:200px">
+      <path id="stream1" d="M0,120 C300,60 520,180 820,120 C1120,60 1360,180 1620,120 C1780,90 1900,140 1920,120" fill="none" stroke="rgba(143,211,196,0.5)" stroke-width="6" stroke-dasharray="600"/>
+      <path id="stream2" d="M0,150 C300,100 520,200 820,150 C1120,100 1360,200 1620,150 C1780,120 1900,170 1920,150" fill="none" stroke="rgba(200,214,213,0.3)" stroke-width="4" stroke-dasharray="600"/>
+    </svg>
+    <svg class="grass" style="left:260px" width="60" height="160" viewBox="0 0 60 160"><path d="M30,160 C20,100 10,60 18,20" stroke="rgba(143,211,196,0.45)" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+    <svg class="grass" style="left:520px" width="60" height="160" viewBox="0 0 60 160"><path d="M30,160 C40,100 52,60 44,20" stroke="rgba(143,211,196,0.4)" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+    <svg class="grass" style="left:1500px" width="60" height="160" viewBox="0 0 60 160"><path d="M30,160 C22,100 12,60 20,20" stroke="rgba(143,211,196,0.42)" stroke-width="5" fill="none" stroke-linecap="round"/></svg>
+    <svg id="butterfly" width="120" height="100" viewBox="0 0 120 100">
+      <g class="bf-wing" fill="rgba(231,217,176,0.85)">
+        <path d="M60,50 C30,10 0,20 12,52 C0,80 34,88 60,54 Z"/>
+        <path d="M60,50 C90,10 120,20 108,52 C120,80 86,88 60,54 Z"/>
+      </g>
+      <rect x="57" y="30" width="6" height="44" rx="3" fill="#3a2f20"/>
+    </svg>
+    <div id="classic">
+      <div class="t">核心经典</div>
+      <div class="b">《道德经》　《庄子》</div>
+    </div>
+    <div id="cap3">老子写下五千言《道德经》，庄子写下《庄子》。<br/>他们不教人们去征服世界，而是教我们看见万物本来的样子。<br/>天地有它运行的规律，草木枯荣，流水不息。</div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#butterfly", { x: 0, y: 0, opacity: 0 }, { opacity: 1, duration: 0.8 }, 0.2);
+      tl.to("#butterfly", { x: 600, y: -120, duration: 4, ease: "sine.inOut" }, 0.4);
+      tl.to("#butterfly", { x: 1100, y: 60, duration: 4, ease: "sine.inOut" }, 4.4);
+      tl.to("#butterfly", { x: 1500, y: -140, duration: 4, ease: "sine.inOut" }, 8.4);
+      tl.to("#butterfly", { opacity: 0, duration: 1 }, 13);
+      tl.to(".bf-wing", { scaleX: 0.3, duration: 0.18, yoyo: true, repeat: 30, transformOrigin: "center" }, 0.4);
+      tl.fromTo("#stream1", { strokeDashoffset: 600 }, { strokeDashoffset: 0, duration: 6, ease: "none", repeat: 2 }, 0);
+      tl.fromTo("#stream2", { strokeDashoffset: 600 }, { strokeDashoffset: 0, duration: 8, ease: "none", repeat: 1 }, 0);
+      tl.to(".grass", { rotation: 8, duration: 1.6, yoyo: true, repeat: 20, ease: "sine.inOut", transformOrigin: "bottom center" }, 0);
+      tl.fromTo("#classic", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 1.6);
+      tl.to("#classic", { opacity: 0, duration: 0.8 }, 9.5);
+      tl.fromTo("#cap3", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0 }, 10.2);
+      tl.to("#cap3", { opacity: 0, duration: 0.8 }, 17.0);
+      window.__timelines["c3"] = tl; tl.seek(0);
+    })();
+  </script>
+</template>
