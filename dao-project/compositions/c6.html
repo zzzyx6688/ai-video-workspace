@@ -1,0 +1,40 @@
+<template>
+  <style>
+    .clip { position: relative; inset: auto; }
+    @font-face { font-family: "Noto Sans CJK SC"; src: local("Noto Sans CJK SC"); font-weight: 400 900; }
+    #c6 { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      font-family: "Noto Sans CJK SC", system-ui, sans-serif; color: #e8eef0; }
+    #c6-inner { position: absolute; inset: 0; transform: scale(1.12); }
+    .mountain { position: absolute; left: 0; width: 100%; }
+    #m6-far  { bottom: 300px; opacity: 0.28; }
+    #m6-mid  { bottom: 210px; opacity: 0.42; }
+    #m6-near { bottom: 120px; opacity: 0.60; }
+    .mist6 { position: absolute; border-radius: 50%; filter: blur(30px); background: rgba(206,214,213,0.14); }
+    #cap6 { position: absolute; left: 0; right: 0; bottom: 150px; text-align: center; padding: 0 240px;
+      font-size: 42px; line-height: 1.7; letter-spacing: 0.04em; color: #eef3f2; opacity: 0;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+  </style>
+  <div id="c6" data-composition-id="c6" data-start="0" data-duration="10" data-width="1920" data-height="1080">
+    <div id="c6-inner">
+      <svg class="mountain" id="m6-far" viewBox="0 0 1920 320" preserveAspectRatio="none" style="height:320px">
+        <path d="M0,320 L0,180 C300,90 520,210 760,150 C1040,80 1280,200 1520,140 C1700,100 1840,170 1920,140 L1920,320 Z" fill="#2c4047"/></svg>
+      <svg class="mountain" id="m6-mid" viewBox="0 0 1920 300" preserveAspectRatio="none" style="height:300px">
+        <path d="M0,300 L0,160 C260,60 500,200 820,130 C1120,70 1360,210 1620,150 C1780,110 1880,180 1920,160 L1920,300 Z" fill="#223439"/></svg>
+      <svg class="mountain" id="m6-near" viewBox="0 0 1920 280" preserveAspectRatio="none" style="height:280px">
+        <path d="M0,280 L0,150 C320,40 620,200 900,140 C1180,90 1420,200 1680,150 C1820,125 1900,170 1920,150 L1920,280 Z" fill="#18282c"/></svg>
+      <div class="mist6" style="width:700px;height:240px;left:100px;top:380px"></div>
+      <div class="mist6" style="width:820px;height:260px;left:1050px;top:460px"></div>
+    </div>
+    <div id="cap6">道家追求的，不是逃离尘世，<br/>而是学会顺应规律，与自然、与自己和平共处。</div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#c6-inner", { scale: 1.12, y: 0 }, { scale: 0.92, y: -20, duration: 10, ease: "none" }, 0);
+      tl.fromTo(".mist6", { x: 0 }, { x: 100, duration: 10, ease: "none", stagger: 0.5 }, 0);
+      tl.fromTo("#cap6", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1.4, ease: "power2.out" }, 1.2);
+      tl.to("#cap6", { opacity: 0, duration: 1.0 }, 8.8);
+      window.__timelines["c6"] = tl; tl.seek(0);
+    })();
+  </script>
+</template>
