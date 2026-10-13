@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>道家 · 东方水墨电影感短片</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1920px; height: 1080px; overflow: hidden;
+        background: #0c1316;
+        font-family: "Noto Sans CJK SC", Inter, ui-sans-serif, system-ui, sans-serif;
+        color: #e8eef0;
+      }
+      @font-face {
+        font-family: "Noto Sans CJK SC";
+        src: local("Noto Sans CJK SC");
+        font-weight: 400 900;
+      }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; }
+      .clip { position: absolute; inset: 0; }
+
+      /* 全局青灰水墨天幕（全片 0-90s） */
+      #bg-sky {
+        background: linear-gradient(180deg, #0e171b 0%, #15242a 38%, #1b2d33 66%, #22353b 100%);
+      }
+      #bg-mist {
+        background:
+          radial-gradient(900px 380px at 22% 74%, rgba(200,214,213,0.10), transparent 70%),
+          radial-gradient(1100px 430px at 82% 82%, rgba(200,214,213,0.08), transparent 72%);
+        filter: blur(2px);
+      }
+      #bg-sun {
+        background: radial-gradient(700px 540px at 77% 19%, rgba(222,205,158,0.15), transparent 62%);
+      }
+      #bg-vignette {
+        background: radial-gradient(128% 96% at 50% 44%, transparent 50%, rgba(3,7,9,0.74) 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="90" data-width="1920" data-height="1080">
+      <div id="bg-sky" class="clip" data-start="0" data-duration="90" data-track-index="0"></div>
+      <div id="bg-mist" class="clip" data-start="0" data-duration="90" data-track-index="1"></div>
+      <div id="bg-sun" class="clip" data-start="0" data-duration="90" data-track-index="2"></div>
+      <div id="bg-vignette" class="clip" data-start="0" data-duration="90" data-track-index="3"></div>
+
+      <div id="c1" data-composition-id="c1" data-composition-src="compositions/c1.html" data-start="0"  data-duration="8"  data-track-index="4"></div>
+      <div id="c2" data-composition-id="c2" data-composition-src="compositions/c2.html" data-start="8"  data-duration="14" data-track-index="5"></div>
+      <div id="c3" data-composition-id="c3" data-composition-src="compositions/c3.html" data-start="22" data-duration="18" data-track-index="6"></div>
+      <div id="c4" data-composition-id="c4" data-composition-src="compositions/c4.html" data-start="40" data-duration="20" data-track-index="7"></div>
+      <div id="c5" data-composition-id="c5" data-composition-src="compositions/c5.html" data-start="60" data-duration="18" data-track-index="8"></div>
+      <div id="c6" data-composition-id="c6" data-composition-src="compositions/c6.html" data-start="78" data-duration="10" data-track-index="9"></div>
+      <div id="c7" data-composition-id="c7" data-composition-src="compositions/c7.html" data-start="88" data-duration="2"  data-track-index="10"></div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
