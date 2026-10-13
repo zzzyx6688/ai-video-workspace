@@ -1,0 +1,25 @@
+<template>
+  <style>
+    .clip { position: relative; inset: auto; }
+    @font-face { font-family: "Noto Sans CJK SC"; src: local("Noto Sans CJK SC"); font-weight: 400 900; }
+    #c7 { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; background: #05080a;
+      font-family: "Noto Sans CJK SC", system-ui, sans-serif; color: #e8eef0; }
+    #next { position: absolute; left: 0; right: 0; top: 440px; text-align: center;
+      font-size: 80px; font-weight: 800; letter-spacing: 0.1em; opacity: 0;
+      background: linear-gradient(180deg, #f3efe4, #9fb0ac); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #trailer { position: absolute; left: 0; right: 0; top: 564px; text-align: center; opacity: 0;
+      font-size: 34px; letter-spacing: 0.2em; color: #9fb0ac; }
+  </style>
+  <div id="c7" data-composition-id="c7" data-start="0" data-duration="2" data-width="1920" data-height="1080">
+    <div id="next">下一集 · 道法自然</div>
+    <div id="trailer">下集预告｜道法自然</div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#next", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 0.1);
+      tl.fromTo("#trailer", { opacity: 0 }, { opacity: 1, duration: 0.9 }, 0.6);
+      window.__timelines["c7"] = tl; tl.seek(0);
+    })();
+  </script>
+</template>
