@@ -1,0 +1,275 @@
+<!doctype html>
+<!--
+  ============================================================================
+  梵高《星空》3D 飞入遨游 · 15 秒一镜到底
+  ----------------------------------------------------------------------------
+  概念：把《星月夜》变成可"飞进去"的 3D 世界——梵高式漩涡天穹 + 3D 发光星体
+        （含标志性漩涡大星、月亮、丝柏、村庄）+ 景深，相机沿 15s 路径向前飞入
+        画面、在星空间穿梭游弋。
+  贴图：运行时优先加载公有领域原图（Wikimedia），失败则用程序化同构画面兜底。
+  运行：浏览器直接打开（需联网加载 three.js CDN）。要出 mp4 见文末说明。
+  ============================================================================
+-->
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>梵高《星空》3D 飞入遨游 · 15s</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #04060f; }
+      #app { position: fixed; inset: 0; }
+      #hud-top {
+        position: fixed; top: 26px; left: 0; right: 0; text-align: center;
+        font-family: "Noto Sans CJK SC", sans-serif; color: rgba(255,246,214,0.9);
+        letter-spacing: 0.18em; font-size: 30px; text-shadow: 0 2px 14px rgba(0,0,0,0.6);
+        pointer-events: none;
+      }
+      #hud-top small { display:block; font-size: 18px; letter-spacing: 0.1em; color: rgba(255,246,214,0.55); margin-top: 6px; }
+      #progress { position: fixed; left: 0; bottom: 0; height: 6px; width: 0%;
+        background: linear-gradient(90deg, #f5d061, #e8a0a0, #8fb4ff); }
+      #replay {
+        position: fixed; top: 26px; right: 26px; z-index: 5;
+        font-family: "Noto Sans CJK SC", sans-serif; font-size: 26px; color: #fff6d6;
+        background: rgba(0,0,0,0.35); border: 1px solid rgba(255,246,214,0.4);
+        border-radius: 999px; padding: 10px 26px; cursor: pointer; opacity: 0;
+        transition: opacity 0.4s;
+      }
+      #stage-label {
+        position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;
+        font-family: "Noto Sans CJK SC", sans-serif; font-size: 26px;
+        color: rgba(255,246,214,0.78); letter-spacing: 0.08em; pointer-events: none;
+        text-shadow: 0 2px 14px rgba(0,0,0,0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud-top">梵高《星空》· 飞入遨游<small>15 秒一镜到底 · 视角随飞行转换</small></div>
+    <button id="replay">↻ 重播</button>
+    <div id="stage-label"></div>
+    <div id="progress"></div>
+
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+    </script>
+
+    <script type="module">
+      import * as THREE from "three";
+
+      const TOTAL = 15; // 秒
+      const app = document.getElementById("app");
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setSize(innerWidth, innerHeight);
+      app.appendChild(renderer.domElement);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.1, 2000);
+      camera.position.set(0, 12, 380);
+
+      // ---------- 1) 梵高式漩涡天穹（程序化 shader，永远在场的底色） ----------
+      const skyMat = new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        uniforms: { uTime: { value: 0 } },
+        vertexShader: `
+          varying vec3 vPos;
+          void main(){ vPos = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
+        `,
+        fragmentShader: `
+          varying vec3 vPos; uniform float uTime;
+          float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+          float noise(vec2 p){
+            vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+            float a=hash(i), b=hash(i+vec2(1,0)), c=hash(i+vec2(0,1)), d=hash(i+vec2(1,1));
+            return mix(mix(a,b,f.x), mix(c,d,f.x), f.y);
+          }
+          float fbm(vec2 p){ float v=0.0,a=0.5; for(int i=0;i<5;i++){ v+=a*noise(p); p*=2.02; a*=0.5; } return v; }
+          void main(){
+            vec3 d = normalize(vPos);
+            float u = atan(d.z, d.x);
+            float v = asin(clamp(d.y,-1.0,1.0));
+            vec2 p = vec2(u, v) * 1.7;
+            float n = fbm(p + vec2(uTime*0.03, uTime*0.012));
+            vec3 base = mix(vec3(0.03,0.08,0.20), vec3(0.09,0.21,0.44), n);
+            float sw = fbm(p*2.3 + n*1.6 + vec2(uTime*0.02, 0.0));
+            base += vec3(0.96,0.80,0.32) * smoothstep(0.56,0.96,sw) * 0.65;
+            base *= mix(0.66, 1.05, d.y*0.5+0.5);
+            gl_FragColor = vec4(base, 1.0);
+          }
+        `,
+      });
+      scene.add(new THREE.Mesh(new THREE.SphereGeometry(900, 48, 48), skyMat));
+
+      // ---------- 2) "画框"：程序化《星空》画面（原图可载则替换） ----------
+      function makePaintingCanvas() {
+        const c = document.createElement("canvas"); c.width = 1024; c.height = 810;
+        const x = c.getContext("2d");
+        const g = x.createLinearGradient(0, 0, 0, 810);
+        g.addColorStop(0, "#0a1a3a"); g.addColorStop(0.55, "#14315f"); g.addColorStop(1, "#0b1f3d");
+        x.fillStyle = g; x.fillRect(0, 0, 1024, 810);
+        // 蓝色笔触漩涡
+        for (let i = 0; i < 90; i++) {
+          x.strokeStyle = `rgba(120,170,230,${0.05 + Math.random() * 0.08})`;
+          x.lineWidth = 2 + Math.random() * 3; x.beginPath();
+          const sx = Math.random() * 1024, sy = Math.random() * 560;
+          x.moveTo(sx, sy);
+          for (let k = 0; k < 5; k++) x.lineTo(sx + Math.cos(k + i) * 26, sy + Math.sin(k * 1.3 + i) * 26);
+          x.stroke();
+        }
+        const spiral = (cx, cy, r, col) => {
+          x.strokeStyle = col; x.lineWidth = 5; x.beginPath();
+          for (let a = 0; a < Math.PI * 6; a += 0.2) {
+            const rr = r * (a / (Math.PI * 6));
+            const px = cx + Math.cos(a) * rr, py = cy + Math.sin(a) * rr;
+            a === 0 ? x.moveTo(px, py) : x.lineTo(px, py);
+          }
+          x.stroke();
+        };
+        spiral(300, 230, 95, "rgba(255,224,120,0.95)");
+        spiral(300, 230, 60, "rgba(255,240,190,0.9)");
+        spiral(720, 175, 72, "rgba(255,224,120,0.9)");
+        // 月亮（右上，暖黄光晕）
+        const mg = x.createRadialGradient(870, 130, 8, 870, 130, 90);
+        mg.addColorStop(0, "rgba(255,244,190,1)"); mg.addColorStop(0.5, "rgba(255,224,130,0.7)"); mg.addColorStop(1, "rgba(255,224,130,0)");
+        x.fillStyle = mg; x.beginPath(); x.arc(870, 130, 90, 0, 7); x.fill();
+        // 丝柏（左侧暗色火焰）
+        x.fillStyle = "#0c1a12"; x.beginPath(); x.moveTo(70, 810);
+        for (let y = 810; y > 120; y -= 20) { const w = 46 * (1 - (810 - y) / 760); x.lineTo(70 + Math.sin(y * 0.05) * 26 + w, y); }
+        for (let y = 120; y < 810; y += 20) { const w = 46 * (1 - (810 - y) / 760); x.lineTo(70 + Math.sin(y * 0.05) * 26 - w, y); }
+        x.closePath(); x.fill();
+        // 村庄（底部暗带 + 暖黄窗）
+        x.fillStyle = "#0a1426"; x.fillRect(0, 720, 1024, 90);
+        for (let i = 0; i < 22; i++) {
+          x.fillStyle = "rgba(255,210,120,0.9)";
+          x.fillRect(120 + i * 40 + Math.random() * 10, 740 + Math.random() * 30, 10, 12);
+        }
+        return new THREE.CanvasTexture(c);
+      }
+      const paintingTex = makePaintingCanvas();
+      const frameMat = new THREE.MeshBasicMaterial({ map: paintingTex });
+      const painting = new THREE.Mesh(new THREE.PlaneGeometry(540, 427), frameMat);
+      painting.position.set(0, 0, -190);
+      scene.add(painting);
+      // 运行时尝试换上公有领域原图（默认 crossOrigin=anonymous）
+      new THREE.TextureLoader().load(
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1024px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+        (tex) => { tex.colorSpace = THREE.SRGBColorSpace; frameMat.map = tex; frameMat.needsUpdate = true; }
+      );
+
+      // ---------- 3) 发光星体（glow / 漩涡大星 / 月亮） ----------
+      function glowTex() {
+        const c = document.createElement("canvas"); c.width = c.height = 128;
+        const x = c.getContext("2d"); const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+        g.addColorStop(0, "rgba(255,250,225,1)"); g.addColorStop(0.22, "rgba(255,236,150,0.9)");
+        g.addColorStop(0.5, "rgba(245,200,90,0.32)"); g.addColorStop(1, "rgba(245,200,90,0)");
+        x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c);
+      }
+      function spiralTex() {
+        const c = document.createElement("canvas"); c.width = c.height = 256;
+        const x = c.getContext("2d"); x.translate(128, 128);
+        for (let arm = 0; arm < 3; arm++) {
+          x.strokeStyle = "rgba(255,228,130,0.9)"; x.lineWidth = 7; x.beginPath();
+          for (let a = 0; a < Math.PI * 7; a += 0.15) {
+            const rr = 6 + a * 4.2; const px = Math.cos(a + arm * 2.1) * rr, py = Math.sin(a + arm * 2.1) * rr;
+            a === 0 ? x.moveTo(px, py) : x.lineTo(px, py);
+          }
+          x.stroke();
+        }
+        const g = x.createRadialGradient(0, 0, 4, 0, 0, 30);
+        g.addColorStop(0, "rgba(255,248,210,1)"); g.addColorStop(1, "rgba(255,248,210,0)");
+        x.fillStyle = g; x.beginPath(); x.arc(0, 0, 30, 0, 7); x.fill();
+        return new THREE.CanvasTexture(c);
+      }
+      const GT = glowTex(), ST = spiralTex();
+      const stars = [];
+      const addStar = (tex, size, cx, cy, cz, radius, speed, color) => {
+        const m = new THREE.SpriteMaterial({ map: tex, color, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+        const s = new THREE.Sprite(m); s.scale.set(size, size, 1);
+        s.position.set(cx, cy, cz); scene.add(s);
+        stars.push({ s, cx, cy, cz, radius, speed, phase: Math.random() * 7, size });
+      };
+      // 散布在 z∈[-200,120] 的星场，制造飞入后的景深与穿梭感
+      for (let i = 0; i < 150; i++) {
+        addStar(GT, 6 + Math.random() * 14,
+          (Math.random() - 0.5) * 260, (Math.random() - 0.5) * 180,
+          -200 + Math.random() * 320, 6 + Math.random() * 22, 0.15 + Math.random() * 0.5,
+          new THREE.Color().setHSL(0.12 + Math.random() * 0.05, 0.8, 0.7));
+      }
+      // 4 颗标志性漩涡大星
+      [[ -90, 60, -40], [110, 30, -70], [10, 110, 20], [-40, -50, -10]].forEach((p, i) =>
+        addStar(ST, 70 + i * 6, p[0], p[1], p[2], 26, 0.25 + i * 0.05, 0xffe39a));
+      // 月亮
+      const moon = new THREE.Sprite(new THREE.SpriteMaterial({ map: GT, color: 0xfff0c0, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+      moon.scale.set(120, 120, 1); moon.position.set(150, 120, -120); scene.add(moon);
+
+      // 远处微小星点（深度）
+      const far = new Float32Array(1800 * 3);
+      for (let i = 0; i < 1800; i++) { const r = 500 + Math.random() * 300, th = Math.random() * 7, ph = Math.acos(2 * Math.random() - 1);
+        far[i*3] = r*Math.sin(ph)*Math.cos(th); far[i*3+1] = r*Math.sin(ph)*Math.sin(th); far[i*3+2] = r*Math.cos(ph); }
+      const fg = new THREE.BufferGeometry(); fg.setAttribute("position", new THREE.BufferAttribute(far, 3));
+      scene.add(new THREE.Points(fg, new THREE.PointsMaterial({ color: 0xbcd2ff, size: 2.2, transparent: true, opacity: 0.7 })));
+
+      // ---------- 4) 相机 15s 飞行路径（飞入画面 + 星空间游弋） ----------
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+      const stages = [
+        [0.0, "远眺画布 · 缓缓逼近"],
+        [0.25, "穿过画布 · 坠入星夜"],
+        [0.5, "穿梭漩涡大星之间"],
+        [0.78, "俯仰游弋 · 视角流转"],
+        [0.95, "停在星海之中"],
+      ];
+      function camAt(T, time) {
+        const z = lerp(380, -150, easeInOut(T));
+        const x = Math.sin(T * Math.PI * 2.3) * 42 + Math.sin(T * Math.PI * 0.9) * 16;
+        const y = 12 + Math.sin(T * Math.PI * 1.9 + 1.0) * 30;
+        camera.position.set(x, y, z);
+        const lx = x * 0.4 + Math.sin((T + 0.15) * Math.PI * 2.1) * 34;
+        const ly = y * 0.4 + Math.cos((T + 0.1) * Math.PI * 1.5) * 20;
+        const lz = z - 130;
+        camera.lookAt(lx, ly, lz);
+        camera.rotation.z = Math.sin(T * Math.PI * 3.0) * 0.05; // 轻微滚转
+      }
+
+      // ---------- 5) 渲染循环 ----------
+      const clock = new THREE.Clock();
+      let elapsed = 0;
+      const prog = document.getElementById("progress");
+      const stageEl = document.getElementById("stage-label");
+      const replay = document.getElementById("replay");
+      function frame() {
+        requestAnimationFrame(frame);
+        const dt = Math.min(clock.getDelta(), 0.05);
+        elapsed += dt;
+        const T = (elapsed % TOTAL) / TOTAL;
+        const tt = elapsed % TOTAL;
+        camAt(T, tt);
+        skyMat.uniforms.uTime.value = tt;
+        stars.forEach((s) => {
+          const a = s.phase + tt * s.speed;
+          s.s.position.set(
+            s.cx + Math.cos(a) * s.radius,
+            s.cy + Math.sin(a) * s.radius * 0.6,
+            s.cz + Math.sin(a * 0.7) * s.radius * 0.4
+          );
+          if (s.s.material.map === ST) s.s.material.rotation += 0.01;
+        });
+        // 阶段标签
+        let label = stages[0][1];
+        for (const [start, name] of stages) if (T >= start) label = name;
+        stageEl.textContent = label;
+        prog.style.width = (T * 100) + "%";
+        replay.style.opacity = T > 0.97 ? 1 : 0;
+        renderer.render(scene, camera);
+      }
+      frame();
+      replay.addEventListener("click", () => { elapsed = 0; clock.getDelta(); });
+
+      addEventListener("resize", () => {
+        camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+        renderer.setSize(innerWidth, innerHeight);
+      });
+    </script>
+  </body>
+</html>
