@@ -1,0 +1,215 @@
+<!doctype html>
+<!--
+  ============================================================================
+  情绪短片模板 · 致敬向（"他自杀了……"爆款公式的可复用平替）
+  ----------------------------------------------------------------------------
+  蒸馏来源：https://b23.tv/IA6EeSq  （B站「致郁/纪念」短片上位模板）
+  本片为原创模板：不搬运《挚爱梵高》画面、不使用 lucky 原曲，改用你自己的
+  「雨夜·窗.mp4」作"流动油画"平替 + 原创文案 + 自有/无版权 BGM。
+
+  ★ 你要填的 4 个槽位（直接改下方 [data-slot] 文本即可）：
+    [钩子]  → #hook        A0 那行留白标题
+    [人物]  → #a1 / #a2x    "他"是谁、代表作/名场面
+    [画面]  → <video src>   换成你自己的画家风素材（mp4/png 序列）
+    [音乐]  → <audio src>   放你自己的钢琴/大提琴 loop（此处留空=静音预览）
+  ============================================================================
+-->
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>情绪短片模板 · 致敬向（65s）</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px; height: 1920px; overflow: hidden;
+        background: #05060a; color: #f4f1ea;
+        font-family: "Noto Sans CJK SC", "Songti SC", serif;
+      }
+      /* 永远在场的"油画感"底图（视频加载失败也有的兜底层） */
+      #paint-base {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(120% 80% at 30% 20%, #2a2438 0%, transparent 60%),
+          radial-gradient(120% 90% at 75% 80%, #14202b 0%, transparent 60%),
+          linear-gradient(160deg, #0c0e16 0%, #16121c 50%, #080a10 100%);
+      }
+      /* 流动油画平替：你的雨夜窗素材（慢推镜 + 油画滤镜） */
+      #footage {
+        position: absolute; inset: -4%; width: 108%; height: 108%;
+        object-fit: cover; opacity: 0.9;
+        filter: saturate(1.15) contrast(1.05) brightness(0.82) blur(0.6px);
+        transform: scale(1.0);
+      }
+      #vignette {
+        position: absolute; inset: 0;
+        background: radial-gradient(120% 95% at 50% 45%, transparent 50%, rgba(3,4,9,0.82) 100%);
+        pointer-events: none;
+      }
+      #grain {
+        position: absolute; inset: 0; opacity: 0.06; pointer-events: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      }
+      .act {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; text-align: center;
+        opacity: 0; padding: 0 90px; gap: 36px;
+      }
+      .line { font-weight: 500; letter-spacing: 0.06em; line-height: 1.5;
+        text-shadow: 0 4px 30px rgba(0,0,0,0.6); }
+      #hook { font-size: 116px; font-weight: 800; letter-spacing: 0.04em; }
+      #hook-sub { font-size: 40px; color: #b9b2a4; margin-top: 8px; }
+      .a1 .line { font-size: 78px; }
+      .a2 .card { font-size: 72px; font-weight: 600; max-width: 860px; }
+      .a3 .line { font-size: 92px; font-weight: 700; }
+      #end { font-size: 52px; color: #cfc7b6; letter-spacing: 0.12em; }
+
+      /* 底部 HUD：边看边学——显示当前幕 + 公式关键词 */
+      #hud {
+        position: absolute; left: 0; right: 0; bottom: 54px;
+        display: flex; justify-content: center; gap: 18px; align-items: center;
+        font-family: "Noto Sans CJK SC", sans-serif; font-size: 30px;
+        color: rgba(244,241,234,0.78); letter-spacing: 0.04em;
+      }
+      #hud .tag {
+        border: 1px solid rgba(244,241,234,0.35); border-radius: 999px;
+        padding: 8px 22px; backdrop-filter: blur(4px); background: rgba(0,0,0,0.25);
+      }
+      #hud .formula { color: #f3c969; }
+
+      /* 进度条 */
+      #progress { position: absolute; left: 0; bottom: 0; height: 6px;
+        width: 0%; background: linear-gradient(90deg,#f3c969,#e8a0a0); }
+
+      /* 重播按钮 */
+      #replay {
+        position: absolute; top: 40px; right: 40px; z-index: 5;
+        font-family: "Noto Sans CJK SC", sans-serif; font-size: 30px;
+        color: #f4f1ea; background: rgba(0,0,0,0.35);
+        border: 1px solid rgba(244,241,234,0.4); border-radius: 999px;
+        padding: 12px 30px; cursor: pointer; opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="paint-base"></div>
+
+    <!-- [画面] 槽位：换成你自己的画家风素材 -->
+    <video id="footage" autoplay muted loop playsinline
+           src="../雨夜·窗.mp4" onerror="this.style.display='none'"></video>
+    <!-- [音乐] 槽位：放你自己的钢琴/大提琴 loop；留空则静音预览
+    <audio id="bgm" loop src="你的音乐.mp3"></audio> -->
+
+    <div id="vignette"></div>
+    <div id="grain"></div>
+
+    <!-- A0 钩子 -->
+    <div class="act" id="act0">
+      <!-- [钩子] 槽位 -->
+      <div class="line" id="hook" data-slot="钩子">他，走了……</div>
+      <div class="line" id="hook-sub">—— 谨以此片，纪念一位曾燃烧过的人</div>
+    </div>
+
+    <!-- A1 引入 -->
+    <div class="act a1" id="act1">
+      <div class="line" data-slot="人物">你或许见过他的画</div>
+      <div class="line">却没记住，他的名字</div>
+    </div>
+
+    <!-- A2 峰值蒙太奇 -->
+    <div class="act a2" id="act2">
+      <div class="card" data-slot="人物">他用一生，换一幅不被理解的画</div>
+      <div class="card">孤独，是他最忠实的颜料</div>
+      <div class="card">当世界终于鼓掌，台下已空无一人</div>
+    </div>
+
+    <!-- A3 沉降 -->
+    <div class="act a3" id="act3">
+      <div class="line">可世界记得他时</div>
+      <div class="line">他早已不在</div>
+    </div>
+
+    <!-- A4 结尾 -->
+    <div class="act" id="act4">
+      <div class="line" id="end" data-slot="年份">谨以此片纪念 · 2026</div>
+    </div>
+
+    <div id="hud">
+      <span class="tag" id="hud-act">第 0 幕</span>
+      <span class="tag formula" id="hud-formula">公式</span>
+    </div>
+    <div id="progress"></div>
+    <button id="replay">↻ 重播</button>
+
+    <script>
+      const TOTAL = 65; // 总时长（秒）
+      const acts = [
+        { id: "act0", name: "A0 钩子",   formula: "信息缺口：留白逼人看完", t: [0, 4] },
+        { id: "act1", name: "A1 引入",   formula: "建立亲密：把符号变成人", t: [4, 14] },
+        { id: "act2", name: "A2 峰值",   formula: "油画蒙太奇 + 短句=破防", t: [14, 44] },
+        { id: "act3", name: "A3 沉降",   formula: "留白收束：从燃到静",     t: [44, 58] },
+        { id: "act4", name: "A4 结尾",   formula: "仪式感收尾=引导收藏",   t: [58, 65] },
+      ];
+      const byId = (s) => document.getElementById(s);
+      const hudAct = byId("hud-act"), hudF = byId("hud-formula");
+      const prog = byId("progress"), replay = byId("replay");
+
+      const master = gsap.timeline({ paused: true });
+
+      // 流动油画平替：全程极慢推镜（Ken Burns）
+      master.fromTo("#footage", { scale: 1.0 }, { scale: 1.16, duration: TOTAL, ease: "none" }, 0);
+
+      // A0 钩子 0–4s
+      master.fromTo("#act0", { opacity: 0 }, { opacity: 1, duration: 1.1, ease: "power2.out" }, 0.3);
+      master.fromTo("#hook", { y: 40 }, { y: 0, duration: 1.4, ease: "power3.out" }, 0.3);
+      master.to("#act0", { opacity: 0, duration: 0.8, ease: "power2.in" }, 3.3);
+
+      // A1 引入 4–14s
+      master.fromTo("#act1", { opacity: 0 }, { opacity: 1, duration: 1.0 }, 4.2);
+      master.fromTo("#act1 .line:nth-child(1)", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9 }, 4.4);
+      master.fromTo("#act1 .line:nth-child(2)", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9 }, 5.6);
+      master.to("#act1", { opacity: 0, duration: 0.8 }, 13.4);
+
+      // A2 峰值蒙太奇 14–44s（三张卡依次进出）
+      const cards = ["#act2 .card:nth-child(1)", "#act2 .card:nth-child(2)", "#act2 .card:nth-child(3)"];
+      const segs = [[14.3, 23], [24, 33], [34, 43]];
+      master.fromTo("#act2", { opacity: 0 }, { opacity: 1, duration: 0.6 }, 14.0);
+      cards.forEach((sel, i) => {
+        master.fromTo(sel, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1, ease: "power3.out" }, segs[i][0]);
+        master.to(sel, { y: -40, opacity: 0, duration: 0.9, ease: "power2.in" }, segs[i][1] - 1.4);
+      });
+      master.to("#act2", { opacity: 0, duration: 0.6 }, 43.2);
+
+      // A3 沉降 44–58s
+      master.fromTo("#act3", { opacity: 0 }, { opacity: 1, duration: 1.2 }, 44.3);
+      master.fromTo("#act3 .line:nth-child(1)", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1.0 }, 44.5);
+      master.fromTo("#act3 .line:nth-child(2)", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 1.0 }, 45.7);
+      master.to("#act3", { opacity: 0, duration: 1.2 }, 56.5);
+
+      // A4 结尾 58–65s（黑屏 + 小字）
+      master.fromTo("#act4", { opacity: 0 }, { opacity: 1, duration: 1.0 }, 58.5);
+      master.fromTo("#end", { letterSpacing: "0.02em" }, { letterSpacing: "0.14em", duration: 3 }, 58.5);
+
+      // HUD + 进度条随播放更新
+      master.eventCallback("onUpdate", () => {
+        const t = master.time();
+        prog.style.width = (t / TOTAL * 100) + "%";
+        const cur = acts.find((a) => t >= a.t[0] && t < a.t[1]) || acts[acts.length - 1];
+        hudAct.textContent = cur.name;
+        hudF.textContent = cur.formula;
+      });
+      master.eventCallback("onComplete", () => { replay.style.opacity = 1; });
+
+      function play() {
+        replay.style.opacity = 0;
+        master.restart();
+        const bgm = byId("bgm"); if (bgm) bgm.play().catch(() => {});
+      }
+      replay.addEventListener("click", play);
+
+      // 自动播放（视频静音自动播放通常被允许）
+      window.addEventListener("load", () => setTimeout(play, 300));
+    </script>
+  </body>
+</html>
