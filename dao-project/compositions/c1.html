@@ -1,0 +1,60 @@
+<template>
+  <style>
+    .clip { position: relative; inset: auto; }
+    @font-face { font-family: "Noto Sans CJK SC"; src: local("Noto Sans CJK SC"); font-weight: 400 900; }
+    #c1 { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden;
+      font-family: "Noto Sans CJK SC", system-ui, sans-serif; color: #e8eef0; }
+    #c1-inner { position: absolute; inset: 0; }
+    .mountain { position: absolute; left: 0; width: 100%; }
+    #m-far  { bottom: 280px; opacity: 0.30; }
+    #m-mid  { bottom: 200px; opacity: 0.45; }
+    #m-near { bottom: 118px; opacity: 0.62; }
+    .mist { position: absolute; border-radius: 50%; filter: blur(26px); background: rgba(206,218,216,0.16); }
+    #water { position: absolute; left: 0; bottom: 0; width: 100%; height: 240px;
+      background: linear-gradient(180deg, rgba(34,53,59,0), rgba(20,33,38,0.85)); }
+    #ripple { position: absolute; left: 50%; bottom: 118px; width: 520px; height: 160px; margin-left: -260px;
+      border: 2px solid rgba(200,214,213,0.35); border-radius: 50%; transform: scale(0.4); opacity: 0; }
+    #title { position: absolute; left: 0; right: 0; top: 286px; text-align: center;
+      font-size: 188px; font-weight: 800; letter-spacing: 0.16em; line-height: 1;
+      background: linear-gradient(180deg, #f3efe4, #aab8b4 70%, #7e908c);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #subtitle-en { position: absolute; left: 0; right: 0; top: 524px; text-align: center;
+      font-size: 26px; letter-spacing: 0.5em; color: rgba(190,202,200,0.6); }
+    #cap1 { position: absolute; left: 0; right: 0; bottom: 122px; text-align: center; padding: 0 260px;
+      font-size: 40px; line-height: 1.6; letter-spacing: 0.04em; color: #eef3f2; opacity: 0;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.5); }
+  </style>
+  <div id="c1" data-composition-id="c1" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+    <div id="c1-inner">
+      <svg class="mountain" id="m-far" viewBox="0 0 1920 320" preserveAspectRatio="none" style="height:320px">
+        <path d="M0,320 L0,180 C300,90 520,210 760,150 C1040,80 1280,200 1520,140 C1700,100 1840,170 1920,140 L1920,320 Z" fill="#2c4047"/>
+      </svg>
+      <svg class="mountain" id="m-mid" viewBox="0 0 1920 300" preserveAspectRatio="none" style="height:300px">
+        <path d="M0,300 L0,160 C260,60 500,200 820,130 C1120,70 1360,210 1620,150 C1780,110 1880,180 1920,160 L1920,300 Z" fill="#223439"/>
+      </svg>
+      <svg class="mountain" id="m-near" viewBox="0 0 1920 280" preserveAspectRatio="none" style="height:280px">
+        <path d="M0,280 L0,150 C320,40 620,200 900,140 C1180,90 1420,200 1680,150 C1820,125 1900,170 1920,150 L1920,280 Z" fill="#18282c"/>
+      </svg>
+      <div class="mist" style="width:620px;height:200px;left:-200px;top:360px"></div>
+      <div class="mist" style="width:740px;height:230px;left:1100px;top:430px"></div>
+      <div id="water"></div>
+      <div id="ripple"></div>
+      <div id="title">道家</div>
+      <div id="subtitle-en">THE WAY · DAO</div>
+      <div id="cap1">很多人说起道家，第一反应，是道观、道士、炼丹修仙。</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#c1-inner", { y: 30, scale: 1.04 }, { y: -30, scale: 1.0, duration: 8, ease: "none" }, 0);
+      tl.fromTo(".mist", { x: 0 }, { x: 120, duration: 8, ease: "none", stagger: 0.4 }, 0);
+      tl.fromTo("#title", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1.6, ease: "power2.out" }, 0.6);
+      tl.fromTo("#subtitle-en", { opacity: 0 }, { opacity: 1, duration: 1.4 }, 1.4);
+      tl.fromTo("#ripple", { scale: 0.4, opacity: 0.5 }, { scale: 1.4, opacity: 0, duration: 3.2, repeat: 2, ease: "power1.out" }, 0.8);
+      tl.fromTo("#cap1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.0, ease: "power2.out" }, 2.0);
+      tl.to("#cap1", { opacity: 0, duration: 0.8, ease: "power1.in" }, 7.0);
+      window.__timelines["c1"] = tl; tl.seek(0);
+    })();
+  </script>
+</template>
