@@ -70,6 +70,7 @@ function renderAt(T: number): void {
   camRig.update(rig.camera, u);
   rig.postfx.grade.uniforms.uTime.value = t;
   rig.postfx.render(0);
+  updateHud(u);
 }
 
 function updateHud(T: number): void {
@@ -153,6 +154,8 @@ if (RENDER_MODE) {
   (window as unknown as Record<string, unknown>).__setT = (T: number) => renderAt(T);
   (window as unknown as Record<string, unknown>).__duration = DURATION;
   if (loadingEl) loadingEl.remove();
+  // strip interactive UI chrome so it never appears in captured footage
+  document.getElementById("controls")?.remove();
 } else {
   requestAnimationFrame(frame);
   requestAnimationFrame(() => {
