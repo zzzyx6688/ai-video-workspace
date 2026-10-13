@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>星夜宇宙 · Stroke Cosmos</title>
+    <style>
+      :root {
+        --ink: #05060f;
+        --gold: #ffd479;
+        --azure: #6aa6ff;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: var(--ink); }
+      body { font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; color: #fff; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        display: flex; flex-direction: column; justify-content: space-between;
+        padding: 22px 26px;
+        text-shadow: 0 2px 24px rgba(0,0,0,.85);
+      }
+      #brand {
+        font-size: 13px; letter-spacing: .32em; text-transform: uppercase;
+        color: rgba(255,255,255,.62);
+      }
+      #brand b { color: var(--gold); font-weight: 600; }
+      #shot {
+        margin-top: 10px;
+        font-size: clamp(22px, 3.4vw, 44px); font-weight: 700;
+        letter-spacing: .02em; line-height: 1.1;
+        background: linear-gradient(92deg, #fff 10%, var(--gold) 55%, var(--azure) 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      #subtitle {
+        margin-top: 8px; font-size: clamp(12px, 1.3vw, 16px);
+        color: rgba(255,255,255,.72); max-width: 46ch; line-height: 1.5;
+      }
+      #bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+      #legend { font-size: 12px; color: rgba(255,255,255,.55); line-height: 1.7; letter-spacing: .04em; }
+      #legend span { color: var(--gold); }
+      #controls { display: flex; gap: 10px; pointer-events: auto; }
+      button {
+        pointer-events: auto; cursor: pointer;
+        background: rgba(255,255,255,.06); color: #fff;
+        border: 1px solid rgba(255,255,255,.22); border-radius: 999px;
+        padding: 9px 18px; font-size: 13px; letter-spacing: .06em;
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        transition: all .25s ease;
+      }
+      button:hover { background: rgba(255,212,121,.16); border-color: var(--gold); }
+
+      /* progress bar across the very bottom */
+      #trackbar {
+        position: fixed; left: 0; right: 0; bottom: 0; height: 3px;
+        background: rgba(255,255,255,.10);
+      }
+      #progress {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, var(--azure), var(--gold));
+        box-shadow: 0 0 18px rgba(255,212,121,.7);
+      }
+      #loading {
+        position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+        background: var(--ink); z-index: 10; transition: opacity .8s ease;
+        letter-spacing: .3em; font-size: 13px; color: rgba(255,255,255,.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div>
+        <div id="brand">STARRY NIGHT · <b>STROKE COSMOS</b></div>
+        <div id="shot">—</div>
+        <div id="subtitle">—</div>
+      </div>
+      <div id="bottom">
+        <div id="legend">
+          运镜 <span>6 镜</span> · 尺度 <span>~1:40000</span> · 笔触粒子 <span id="pcount">—</span>
+        </div>
+        <div id="controls">
+          <button id="btn-play">⏸ 暂停</button>
+          <button id="btn-replay">↺ 重播</button>
+          <button id="btn-free">✦ 自由视角</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="trackbar"><div id="progress"></div></div>
+    <div id="loading">ENTERING THE CANVAS…</div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
